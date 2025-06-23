@@ -29,7 +29,7 @@ public class DeathListener implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    player.kickPlayer(ChatColor.RED + "Sei stato eliminato! Non hai più cuori.");
+                    player.kickPlayer(ChatColor.RED + "You have been eliminated! You have no more hearts.");
                 }
             }.runTaskLater(plugin, 1L);
             return;
@@ -64,7 +64,7 @@ public class DeathListener implements Listener {
             event.setDeathMessage(null);
 
             Bukkit.broadcastMessage(ChatColor.DARK_RED + "☠ " + ChatColor.RED + victim.getName() +
-                    " è stato ELIMINATO PERMANENTEMENTE!");
+                    " has been PERMANENTLY ELIMINATED!");
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.playSound(p.getLocation(), Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f);
@@ -74,9 +74,9 @@ public class DeathListener implements Listener {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void run() {
-                    victim.kickPlayer(ChatColor.RED + "Sei stato eliminato! Non hai più cuori.");
+                    victim.kickPlayer(ChatColor.RED + "You have been eliminated! You have no more hearts.");
                     Bukkit.getBanList(BanList.Type.NAME).addBan(victim.getName(),
-                            ChatColor.RED + "Eliminato - 0 cuori rimanenti", null, null);
+                            ChatColor.RED + "Eliminated - 0 hearts remaining", null, null);
                 }
             }.runTaskLater(plugin, 1L);
 
@@ -85,10 +85,10 @@ public class DeathListener implements Listener {
 
             event.setDeathMessage(null);
 
-            String killerName = killer != null ? killer.getName() : "qualcuno";
+            String killerName = killer != null ? killer.getName() : "someone";
             Bukkit.broadcastMessage(ChatColor.RED + "❤ " + victim.getName() +
-                    " è stato ucciso da " + killerName + " e ha perso 1 cuore! " +
-                    ChatColor.GRAY + "(" + newHearts + "/" + plugin.getMaxHearts() + " cuori rimanenti)");
+                    " was killed by " + killerName + " and lost 1 heart! " +
+                    ChatColor.GRAY + "(" + newHearts + "/" + plugin.getMaxHearts() + " hearts remaining)");
         }
     }
 

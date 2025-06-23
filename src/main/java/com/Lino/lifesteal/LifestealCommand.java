@@ -33,20 +33,20 @@ public class LifestealCommand implements CommandExecutor {
 
             case "reload":
                 if (!sender.hasPermission("lifesteal.reload")) {
-                    sender.sendMessage(ChatColor.RED + "Non hai il permesso per ricaricare il plugin!");
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to reload the plugin!");
                     return true;
                 }
                 plugin.reloadPlugin();
-                sender.sendMessage(ChatColor.GREEN + "Plugin ricaricato con successo!");
+                sender.sendMessage(ChatColor.GREEN + "Plugin successfully reloaded!");
                 break;
 
             case "set":
                 if (!sender.hasPermission("lifesteal.admin")) {
-                    sender.sendMessage(ChatColor.RED + "Non hai il permesso per modificare i cuori!");
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to modify hearts!");
                     return true;
                 }
                 if (args.length < 3) {
-                    sender.sendMessage(ChatColor.RED + "Uso: /lifesteal set <giocatore> <cuori>");
+                    sender.sendMessage(ChatColor.RED + "Usage: /lifesteal set <player> <hearts>");
                     return true;
                 }
                 handleSetHearts(sender, args[1], args[2]);
@@ -54,7 +54,7 @@ public class LifestealCommand implements CommandExecutor {
 
             case "get":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "Uso: /lifesteal get <giocatore>");
+                    sender.sendMessage(ChatColor.RED + "Usage: /lifesteal get <player>");
                     return true;
                 }
                 handleGetHearts(sender, args[1]);
@@ -62,11 +62,11 @@ public class LifestealCommand implements CommandExecutor {
 
             case "eliminate":
                 if (!sender.hasPermission("lifesteal.admin")) {
-                    sender.sendMessage(ChatColor.RED + "Non hai il permesso per eliminare giocatori!");
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to eliminate players!");
                     return true;
                 }
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "Uso: /lifesteal eliminate <giocatore>");
+                    sender.sendMessage(ChatColor.RED + "Usage: /lifesteal eliminate <player>");
                     return true;
                 }
                 handleEliminate(sender, args[1]);
@@ -74,11 +74,11 @@ public class LifestealCommand implements CommandExecutor {
 
             case "revive":
                 if (!sender.hasPermission("lifesteal.admin")) {
-                    sender.sendMessage(ChatColor.RED + "Non hai il permesso per resuscitare giocatori!");
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to revive players!");
                     return true;
                 }
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "Uso: /lifesteal revive <giocatore>");
+                    sender.sendMessage(ChatColor.RED + "Usage: /lifesteal revive <player>");
                     return true;
                 }
                 handleRevive(sender, args[1]);
@@ -94,17 +94,17 @@ public class LifestealCommand implements CommandExecutor {
 
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "========== Lifesteal Help ==========");
-        sender.sendMessage(ChatColor.YELLOW + "/lifesteal help" + ChatColor.WHITE + " - Mostra questo menu");
-        sender.sendMessage(ChatColor.YELLOW + "/lifesteal get <giocatore>" + ChatColor.WHITE + " - Mostra i cuori di un giocatore");
+        sender.sendMessage(ChatColor.YELLOW + "/lifesteal help" + ChatColor.WHITE + " - Display this menu");
+        sender.sendMessage(ChatColor.YELLOW + "/lifesteal get <player>" + ChatColor.WHITE + " - Show a player's hearts");
 
         if (sender.hasPermission("lifesteal.admin")) {
-            sender.sendMessage(ChatColor.YELLOW + "/lifesteal set <giocatore> <cuori>" + ChatColor.WHITE + " - Imposta i cuori di un giocatore");
-            sender.sendMessage(ChatColor.YELLOW + "/lifesteal eliminate <giocatore>" + ChatColor.WHITE + " - Elimina un giocatore");
-            sender.sendMessage(ChatColor.YELLOW + "/lifesteal revive <giocatore>" + ChatColor.WHITE + " - Resuscita un giocatore");
+            sender.sendMessage(ChatColor.YELLOW + "/lifesteal set <player> <hearts>" + ChatColor.WHITE + " - Set a player's hearts");
+            sender.sendMessage(ChatColor.YELLOW + "/lifesteal eliminate <player>" + ChatColor.WHITE + " - Eliminate a player");
+            sender.sendMessage(ChatColor.YELLOW + "/lifesteal revive <player>" + ChatColor.WHITE + " - Revive a player");
         }
 
         if (sender.hasPermission("lifesteal.reload")) {
-            sender.sendMessage(ChatColor.YELLOW + "/lifesteal reload" + ChatColor.WHITE + " - Ricarica la configurazione");
+            sender.sendMessage(ChatColor.YELLOW + "/lifesteal reload" + ChatColor.WHITE + " - Reload the configuration");
         }
 
         sender.sendMessage(ChatColor.GOLD + "==================================");
@@ -119,7 +119,7 @@ public class LifestealCommand implements CommandExecutor {
         try {
             int hearts = Integer.parseInt(heartsStr);
             if (hearts < 0 || hearts > plugin.getMaxHearts()) {
-                sender.sendMessage(ChatColor.RED + "I cuori devono essere tra 0 e " + plugin.getMaxHearts());
+                sender.sendMessage(ChatColor.RED + "Hearts must be between 0 and " + plugin.getMaxHearts());
                 return;
             }
 
@@ -133,13 +133,13 @@ public class LifestealCommand implements CommandExecutor {
                     maxHealthAttribute.setBaseValue(health);
                     target.setHealth(Math.min(target.getHealth(), health));
                 }
-                target.sendMessage(ChatColor.YELLOW + "I tuoi cuori sono stati impostati a " + hearts);
+                target.sendMessage(ChatColor.YELLOW + "Your hearts have been set to " + hearts);
             }
 
-            sender.sendMessage(ChatColor.GREEN + "Cuori di " + targetName + " impostati a " + hearts);
+            sender.sendMessage(ChatColor.GREEN + "Hearts of " + targetName + " set to " + hearts);
 
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "Numero di cuori non valido!");
+            sender.sendMessage(ChatColor.RED + "Invalid number of hearts!");
         }
     }
 
@@ -150,10 +150,10 @@ public class LifestealCommand implements CommandExecutor {
 
         int hearts = db.getHearts(target.getUniqueId());
         if (hearts == -1) {
-            sender.sendMessage(ChatColor.RED + "Giocatore non trovato nel database!");
+            sender.sendMessage(ChatColor.RED + "Player not found in the database!");
         } else {
-            sender.sendMessage(ChatColor.YELLOW + targetName + " ha " + ChatColor.RED + hearts +
-                    ChatColor.YELLOW + " cuori rimanenti");
+            sender.sendMessage(ChatColor.YELLOW + targetName + " has " + ChatColor.RED + hearts +
+                    ChatColor.YELLOW + " hearts remaining");
         }
     }
 
@@ -167,15 +167,15 @@ public class LifestealCommand implements CommandExecutor {
         db.setBanned(offlineTarget.getUniqueId(), true);
 
         if (target != null && target.isOnline()) {
-            target.kickPlayer(ChatColor.RED + "Sei stato eliminato da un amministratore!");
+            target.kickPlayer(ChatColor.RED + "You have been eliminated by an administrator!");
         }
 
         Bukkit.getBanList(BanList.Type.NAME).addBan(targetName,
-                ChatColor.RED + "Eliminato - 0 cuori rimanenti", null, null);
+                ChatColor.RED + "Eliminated - 0 hearts remaining", null, null);
 
-        sender.sendMessage(ChatColor.GREEN + "Giocatore " + targetName + " eliminato con successo!");
+        sender.sendMessage(ChatColor.GREEN + "Player " + targetName + " successfully eliminated!");
         Bukkit.broadcastMessage(ChatColor.DARK_RED + "☠ " + ChatColor.RED + targetName +
-                " è stato ELIMINATO da un amministratore!");
+                " has been ELIMINATED by an administrator!");
     }
 
     @SuppressWarnings("deprecation")
@@ -188,8 +188,8 @@ public class LifestealCommand implements CommandExecutor {
 
         Bukkit.getBanList(BanList.Type.NAME).pardon(targetName);
 
-        sender.sendMessage(ChatColor.GREEN + "Giocatore " + targetName + " resuscitato con successo!");
+        sender.sendMessage(ChatColor.GREEN + "Player " + targetName + " successfully revived!");
         Bukkit.broadcastMessage(ChatColor.GREEN + "✦ " + targetName +
-                " è stato resuscitato con " + plugin.getMaxHearts() + " cuori!");
+                " has been revived with " + plugin.getMaxHearts() + " hearts!");
     }
 }

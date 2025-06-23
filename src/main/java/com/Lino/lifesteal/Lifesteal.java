@@ -29,13 +29,13 @@ public class Lifesteal extends JavaPlugin {
         if (databaseManager != null) {
             databaseManager.close();
         }
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Lifesteal disabilitato!");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Lifesteal online!");
     }
 
     public void reloadPlugin() {
         reloadConfig();
         maxHearts = getConfig().getInt("max-hearts", 20);
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Lifesteal ricaricato!");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Lifesteal reloaded!");
     }
 
     public DatabaseManager getDatabaseManager() {

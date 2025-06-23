@@ -1,0 +1,20 @@
+name: Lifesteal
+version: '1.0'
+main: com.Lino.lifesteal.Lifesteal
+api-version: '1.21'
+author: Lino
+description: Plugin Lifesteal per Minecraft
+
+commands:
+  lifesteal:
+    description: Comando principale di Lifesteal
+    usage: /lifesteal help
+    aliases: [ls]
+
+permissions:
+  lifesteal.admin:
+    description: Permesso per amministratori
+    default: op
+  lifesteal.reload:
+    description: Permesso per ricaricare il plugin
+    default: op

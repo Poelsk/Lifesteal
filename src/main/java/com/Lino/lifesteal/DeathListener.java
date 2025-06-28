@@ -7,10 +7,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DeathListener implements Listener {
 
@@ -24,12 +27,13 @@ public class DeathListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         DatabaseManager db = plugin.getDatabaseManager();
+        MessageManager messages = plugin.getMessageManager();
 
         if (db.isBanned(player.getUniqueId())) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    player.kickPlayer(ChatColor.RED + "You have been eliminated! You have no more hearts.");
+                    player.kickPlayer(messages.getMessage("elimination-kick"));
                 }
             }.runTaskLater(plugin, 1L);
             return;
@@ -37,7 +41,7 @@ public class DeathListener implements Listener {
 
         int hearts = db.getHearts(player.getUniqueId());
         if (hearts == -1) {
-            hearts = plugin.getMaxHearts();
+            hearts = plugin.getStartingHearts();
             db.createPlayer(player.getUniqueId(), player.getName(), hearts);
         }
 
@@ -48,11 +52,17 @@ public class DeathListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
+        MessageManager messages = plugin.getMessageManager();
+
+        if (!plugin.shouldLoseHeartsFromFall() && victim.getLastDamageCause() != null &&
+                victim.getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.FALL) {
+            return;
+        }
 
         DatabaseManager db = plugin.getDatabaseManager();
         int currentHearts = db.getHearts(victim.getUniqueId());
         if (currentHearts == -1) {
-            currentHearts = plugin.getMaxHearts();
+            currentHearts = plugin.getStartingHearts();
         }
 
         int newHearts = currentHearts - 1;
@@ -63,8 +73,7 @@ public class DeathListener implements Listener {
 
             event.setDeathMessage(null);
 
-            Bukkit.broadcastMessage(ChatColor.DARK_RED + "☠ " + ChatColor.RED + victim.getName() +
-                    " has been PERMANENTLY ELIMINATED!");
+            Bukkit.broadcastMessage(messages.getMessage("elimination-broadcast", "%player%", victim.getName()));
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.playSound(p.getLocation(), Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f);
@@ -74,9 +83,9 @@ public class DeathListener implements Listener {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void run() {
-                    victim.kickPlayer(ChatColor.RED + "You have been eliminated! You have no more hearts.");
+                    victim.kickPlayer(messages.getMessage("elimination-kick"));
                     Bukkit.getBanList(BanList.Type.NAME).addBan(victim.getName(),
-                            ChatColor.RED + "Eliminated - 0 hearts remaining", null, null);
+                            messages.getMessage("ban-reason"), null, null);
                 }
             }.runTaskLater(plugin, 1L);
 
@@ -86,9 +95,15 @@ public class DeathListener implements Listener {
             event.setDeathMessage(null);
 
             String killerName = killer != null ? killer.getName() : "someone";
-            Bukkit.broadcastMessage(ChatColor.RED + "❤ " + victim.getName() +
-                    " was killed by " + killerName + " and lost 1 heart! " +
-                    ChatColor.GRAY + "(" + newHearts + "/" + plugin.getMaxHearts() + " hearts remaining)");
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("%victim%", victim.getName());
+            placeholders.put("%killer%", killerName);
+            placeholders.put("%hearts%", String.valueOf(newHearts));
+            placeholders.put("%maxhearts%", String.valueOf(plugin.getMaxHearts()));
+
+            Bukkit.broadcastMessage(messages.getMessage("death-message", placeholders));
+
+            victim.getWorld().dropItemNaturally(victim.getLocation(), HeartItemListener.createHeartItem(plugin));
         }
     }
 

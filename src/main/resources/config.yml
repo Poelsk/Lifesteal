@@ -1,1 +1,3 @@
 max-hearts: 20
+starting-hearts: 10
+lose-hearts-from-fall: false

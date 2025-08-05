@@ -23,7 +23,11 @@ public class Lifesteal extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new DeathListener(this), this);
         getServer().getPluginManager().registerEvents(new HeartItemListener(this), this);
-        getCommand("lifesteal").setExecutor(new LifestealCommand(this));
+        getServer().getPluginManager().registerEvents(new DoomsdaySword(this), this);
+
+        LifestealCommand commandExecutor = new LifestealCommand(this);
+        getCommand("lifesteal").setExecutor(commandExecutor);
+        getCommand("lifesteal").setTabCompleter(new LifestealTabCompleter(this));
 
         Bukkit.getConsoleSender().sendMessage(messageManager.getMessage("plugin-enabled"));
     }

@@ -1,6 +1,7 @@
 package com.Lino.lifesteal;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +20,11 @@ import java.util.Map;
 public class HeartItemListener implements Listener {
 
     private final Lifesteal plugin;
+    private final NamespacedKey heartKey;
 
     public HeartItemListener(Lifesteal plugin) {
         this.plugin = plugin;
+        this.heartKey = new NamespacedKey(plugin, "lifesteal_heart");
     }
 
     @EventHandler
@@ -80,6 +84,9 @@ public class HeartItemListener implements Listener {
         lore.add(messages.getMessage("heart-item-lore"));
         meta.setLore(lore);
 
+        NamespacedKey key = new NamespacedKey(plugin, "lifesteal_heart");
+        meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
+
         heart.setItemMeta(meta);
         return heart;
     }
@@ -87,10 +94,8 @@ public class HeartItemListener implements Listener {
     private boolean isHeartItem(ItemStack item) {
         if (!item.hasItemMeta()) return false;
         ItemMeta meta = item.getItemMeta();
-        if (!meta.hasDisplayName()) return false;
 
-        String heartName = plugin.getMessageManager().getMessage("heart-item-name");
-        return meta.getDisplayName().equals(heartName);
+        return meta.getPersistentDataContainer().has(heartKey, PersistentDataType.BYTE);
     }
 
     private void updatePlayerHearts(Player player, int hearts) {

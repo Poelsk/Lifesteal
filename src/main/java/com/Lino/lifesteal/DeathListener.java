@@ -77,7 +77,18 @@ public class DeathListener implements Listener {
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.playSound(p.getLocation(), Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f);
+                p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.8f, 0.8f);
+                p.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.7f, 0.7f);
             }
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(p.getLocation(), Sound.AMBIENT_CAVE, 1.0f, 0.5f);
+                    }
+                }
+            }.runTaskLater(plugin, 20L);
 
             new BukkitRunnable() {
                 @SuppressWarnings("deprecation")
@@ -87,7 +98,7 @@ public class DeathListener implements Listener {
                     Bukkit.getBanList(BanList.Type.NAME).addBan(victim.getName(),
                             messages.getMessage("ban-reason"), null, null);
                 }
-            }.runTaskLater(plugin, 1L);
+            }.runTaskLater(plugin, 40L);
 
         } else {
             db.setHearts(victim.getUniqueId(), victim.getName(), newHearts);

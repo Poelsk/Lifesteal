@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -88,6 +89,14 @@ public class LifestealCommand implements CommandExecutor {
                 handleRevive(sender, args[1]);
                 break;
 
+            case "doomsday":
+                if (!sender.hasPermission("lifesteal.admin")) {
+                    sender.sendMessage(messages.getMessage("no-permission", "%action%", "spawn the Doomsday Sword"));
+                    return true;
+                }
+                handleDoomsday(sender);
+                break;
+
             default:
                 sendHelp(sender);
                 break;
@@ -106,6 +115,7 @@ public class LifestealCommand implements CommandExecutor {
             sender.sendMessage(messages.getMessage("help-cmd-set"));
             sender.sendMessage(messages.getMessage("help-cmd-eliminate"));
             sender.sendMessage(messages.getMessage("help-cmd-revive"));
+            sender.sendMessage(messages.getMessage("help-cmd-doomsday"));
         }
 
         if (sender.hasPermission("lifesteal.reload")) {
@@ -207,5 +217,33 @@ public class LifestealCommand implements CommandExecutor {
         placeholders.put("%player%", targetName);
         placeholders.put("%hearts%", String.valueOf(plugin.getMaxHearts()));
         Bukkit.broadcastMessage(messages.getMessage("revive-broadcast", placeholders));
+    }
+
+    private void handleDoomsday(CommandSender sender) {
+        MessageManager messages = plugin.getMessageManager();
+
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(messages.getMessage("console-cannot-use"));
+            return;
+        }
+
+        Player player = (Player) sender;
+        ItemStack doomsdaySword = DoomsdaySword.createDoomsdaySword(plugin);
+
+        if (player.getInventory().firstEmpty() == -1) {
+            player.getWorld().dropItem(player.getLocation(), doomsdaySword);
+            player.sendMessage(messages.getMessage("doomsday-dropped"));
+        } else {
+            player.getInventory().addItem(doomsdaySword);
+            player.sendMessage(messages.getMessage("doomsday-received"));
+        }
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 0.5f);
+            p.playSound(p.getLocation(), Sound.AMBIENT_CRIMSON_FOREST_MOOD, 1.0f, 0.5f);
+        }
+
+        player.getWorld().strikeLightningEffect(player.getLocation());
+        player.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, player.getLocation(), 100, 0.5, 1, 0.5, 0.1);
     }
 }

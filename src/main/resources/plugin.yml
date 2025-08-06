@@ -1,5 +1,5 @@
 name: Lifesteal
-version: '1.2'
+version: '2.0'
 main: com.Lino.lifesteal.Lifesteal
 api-version: '1.21'
 author: Lino
